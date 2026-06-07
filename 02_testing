@@ -1,0 +1,253 @@
+# CardioSense AI - phase 2: Model Training & Evaluation
+# Author : prince-gupta79
+# Goal : train 5 ML models, comparing them, save the best one
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import (accuracy_score, precision_score,
+                             recall_score, f1_score,
+                             roc_auc_score, confusion_matrix,
+                             roc_curve)
+import joblib
+import warnings
+warnings.filterwarnings('ignore')
+
+# 1. Load & Prepare Data
+# Make sure 'heart (1).csv' is in your working directory
+df = pd.read_csv('heart (1).csv')
+
+X_features = df.drop('target', axis=1)
+y_target = df['target']
+
+# Split - 80% train, 20% test
+X_train, X_test, y_train, y_test = train_test_split(
+    X_features, y_target, test_size=0.2, random_state=42
+)
+
+# Scale features - critical for SVM and KNN
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+print("=" * 60)
+print("CardioSense AI - Model Training Report")
+print("=" * 60)
+print(f"\nTraining samples : {X_train_scaled.shape[0]}")
+print(f"Testing samples  : {X_test_scaled.shape[0]}")
+print(f"Features         : {X_train_scaled.shape[1]}")
+
+# 2. Define 5 Models
+models = {
+    'Logistic Regression': LogisticRegression(max_iter=1000, random_state=42),
+    
+    # WE ADDED REGULARIZATION HERE:
+    'Random Forest': RandomForestClassifier(
+        n_estimators=100, 
+        max_depth=5,              # Prevents trees from growing infinitely deep
+        min_samples_split=5,      # Requires at least 5 samples to split a node
+        random_state=42
+    ),
+    
+    'Gradient Boosting': GradientBoostingClassifier(n_estimators=100, random_state=42),
+    'SVM': SVC(probability=True, random_state=42),
+    'KNN': KNeighborsClassifier(n_neighbors=5)
+}
+
+# 3. Training & Evaluating all Models
+results = []
+
+print(f"\n {'Model':<25} {'Accuracy':>10} {'Precision':>10} {'Recall':>10} {'F1-Score':>10} {'AUC-ROC':>10}" )
+print("-" * 80)
+
+best_auc = 0
+best_model = None
+best_model_name = ""
+
+for name, model in models.items():
+    # Train
+    model.fit(X_train_scaled, y_train)
+
+    # Predict
+    y_pred = model.predict(X_test_scaled)
+    y_prob = model.predict_proba(X_test_scaled)[:, 1]
+
+    # Metrics
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred)
+    rec = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+    auc = roc_auc_score(y_test, y_prob)
+
+    # Cross-validation score (using scaled data)
+    cv_score = cross_val_score(model, X_train_scaled, y_train, cv=5, scoring='roc_auc')
+
+    results.append({
+        'Model' : name,
+        'Accuracy' : acc,
+        'Precision' : prec,
+        'Recall' : rec,
+        'F1 Score' : f1,
+        'AUC-ROC' : auc,
+        'CV Mean' : cv_score.mean(),
+        'CV Std' : cv_score.std()
+    })
+    print(f"{name:<25} {acc:>10.4f} {prec:>10.4f} {rec:>10.4f} {f1:>10.4f} {auc:>10.4f}")
+    
+    # Track best model by AUC-ROC
+    if auc > best_auc:
+        best_auc = auc
+        best_model = model
+        best_model_name = name
+
+# 4. Results Summary Table
+results_df = pd.DataFrame(results).sort_values('AUC-ROC', ascending=False)
+
+print(f"\n{'='*60}")
+print(f"Best Model: {best_model_name}")
+print(f"AUC-ROC Score: {best_auc:.4f}")
+print(f"{'='*60}")
+
+# 5. Visualization Setup
+sns.set_theme(style="darkgrid")
+fig, axes = plt.subplots(2, 2, figsize=(16, 14))
+fig.suptitle("CardioSense AI - Model Evaluation Report", fontsize=20, fontweight='bold')
+
+# Plot 1 - Model Performance Comparison Bar Chart
+ax1 = axes[0, 0]
+metrics_labels = ['Accuracy', 'Precision', 'Recall', 'F1 Score', 'AUC-ROC']
+x_positions = np.arange(len(metrics_labels))
+width = 0.15
+colors = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6']
+
+for i, (_, row) in enumerate(results_df.iterrows()):
+    vals = [row['Accuracy'], row['Precision'], row['Recall'], row['F1 Score'], row['AUC-ROC']]
+    ax1.bar(x_positions + i * width, vals, width, label=row['Model'], color=colors[i % len(colors)], alpha=0.85)
+
+ax1.set_title('Model Performance Comparison', fontweight='bold')
+ax1.set_xticks(x_positions + width * 2)
+ax1.set_xticklabels(metrics_labels)
+ax1.set_ylabel('Score')
+ax1.set_ylim(0.5, 1.05)
+ax1.legend(fontsize=9, loc='lower left')
+
+# Plot 2 - AUC-ROC Curve for All Models
+ax2 = axes[0, 1]
+for name, model in models.items():
+    y_prob = model.predict_proba(X_test_scaled)[:, 1]
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    ax2.plot(fpr, tpr, label=f"{name} (AUC = {roc_auc_score(y_test, y_prob):.2f})")
+
+ax2.plot([0, 1], [0, 1], 'k--', linewidth=1, label='Random Classifier')
+ax2.set_title('ROC Curve - All Models', fontweight='bold')
+ax2.set_xlabel('False Positive Rate')
+ax2.set_ylabel('True Positive Rate (Recall)')
+ax2.legend(fontsize=9)
+
+# Plot 3 - Confusion Matrix of the Best Model
+ax3 = axes[1, 0]
+y_pred_best = best_model.predict(X_test_scaled)
+cm = confusion_matrix(y_test, y_pred_best)
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax3,
+            xticklabels=['No Disease', 'Disease'],
+            yticklabels=['No Disease', 'Disease'])
+ax3.set_title(f'Confusion Matrix - {best_model_name}', fontweight='bold')
+ax3.set_ylabel('Actual Label')
+ax3.set_xlabel('Predicted Label')
+
+# Plot 4 - Feature Importance (From Random Forest)
+ax4 = axes[1, 1]
+rf_model = models['Random Forest']
+
+# getting prediction on both train and e test sets
+train_preds = rf_model.predict(X_train_scaled)
+test_preds = rf_model.predict(X_test_scaled)
+
+print("Overfitting check")
+print(f"Tranning accuracy: {accuracy_score(y_train, train_preds):.4f}")
+print(f"Testing accuracy: {accuracy_score(y_test, test_preds):.4f}")
+
+# checking the 5 fold cross validation scores for the Random forest
+rf_cv_scores = cross_val_score(rf_model, X_train_scaled, y_train, cv = 5, scoring = 'accuracy')
+
+print("\n CROSS VALIDATION")
+print(f"Scores for each fold: {rf_cv_scores}")
+print(f"Mean CV Accuracy: {rf_cv_scores.mean():.4f}")
+print(f"Std Deviation: {rf_cv_scores.std():.4f}")
+
+# train a fresh forest on complete unscaledd data
+raw_rf = RandomForestClassifier(n_estimators = 100, random_state = 42)
+raw_rf.fit(X_train, y_train)
+raw_preds = raw_rf.predict(X_test)
+raw_auc = roc_auc_score(y_test, raw_rf.predict_proba(X_test)[:, 1])
+
+print("\n--- UNSCALED DATA TEST ---")
+print(f"Raw Data Test Accuracy: {accuracy_score(y_test, raw_preds):.4f}")
+print(f"Raw Data Test AUC-ROC:  {raw_auc:.4f}")
+
+models = {
+    'Logistic Regression': LogisticRegression(max_iter=1000, random_state=42),
+    
+    # WE ADDED REGULARIZATION HERE:
+    'Random Forest': RandomForestClassifier(
+        n_estimators=100, 
+        max_depth=5,              # Prevents trees from growing infinitely deep
+        min_samples_split=5,      # Requires at least 5 samples to split a node
+        random_state=42
+    ),
+    
+    'Gradient Boosting': GradientBoostingClassifier(n_estimators=100, random_state=42),
+    'SVM': SVC(probability=True, random_state=42),
+    'KNN': KNeighborsClassifier(n_neighbors=5)
+}
+
+
+features_importance = pd.Series(
+    rf_model.feature_importances_,
+    index=X_features.columns
+).sort_values(ascending=True)
+
+features_importance.plot(kind='barh', ax=ax4, color='#3498db', edgecolor='black')
+ax4.set_title('Feature Importance - Random Forest', fontweight='bold')
+ax4.set_xlabel('Importance Score')
+
+# Adjust layout to fit everything without overlap
+plt.subplots_adjust(
+    left=0.08,      # Left margin
+    right=0.95,     # Right margin
+    bottom=0.08,    # Bottom margin
+    top=0.88,       # Top margin 
+    wspace=0.25,    # Horizontal space between plots
+    hspace=0.35     # Vertical space between rows 
+)
+plt.savefig('model_evaluation.png', dpi=150, bbox_inches='tight')
+plt.show()
+
+# 6. Saving Best Model and Scaler
+joblib.dump(best_model, 'best_model.pkl')
+joblib.dump(scaler, 'scaler.pkl')
+
+print(f"\nBest Model saved as 'best_model.pkl'")
+print(f" Scaler saved as 'scaler.pkl'")
+print(f" Evaluation chart saved as 'model_evaluation.png'")
+
+print(f"\n" + "="*60)
+print(f"CLINICAL INTERPRETATION ({best_model_name}):")
+print(f"" + "="*60)
+clinical_recall = recall_score(y_test, y_pred_best)
+clinical_precision = precision_score(y_test, y_pred_best)
+
+print(f"  Recall (Sensitivity): {clinical_recall:.4f}")
+print(f"   -> Out of 100 sick patients, the model correctly identifies {clinical_recall * 100:.1f} of them.")
+print(f"  Precision: {clinical_precision:.4f}")
+print(f"   -> When the model flags 'Disease', it is correct {clinical_precision * 100:.1f}% of the time.")
+print(f"  AUC-ROC: {best_auc:.4f}")
+print(f"   -> Represents the overall capability to separate healthy vs. sick individuals.")
