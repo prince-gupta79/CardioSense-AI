@@ -132,6 +132,5 @@ To maximize the predictive capabilities of distance-based and geometric classifi
 
 $$z = \frac{x - \mu}{\sigma}$$
 
-*(Paste the rest of your research content here...)*
 
 </details>
