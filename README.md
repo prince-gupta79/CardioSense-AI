@@ -106,3 +106,29 @@ Disclaimer :
 This project is built for educational, portfolio, and research purposes. While a 98% CV accuracy score is stellar, this application should never be used as a standalone substitute for professional medical evaluation, diagnostic angiography, or direct cardiological consultation.
 
 Built in Nepal.
+
+---
+
+## 🔬 Technical Deep-Dive & Research Papers
+Click the dropdown arrow below to expand the complete engineering and statistical research methodology for this project.
+
+<details>
+<summary><b>📖 Click to Expand: Full Research Methodology Document</b></summary>
+
+### Comprehensive Machine Learning Benchmarking for Cardiovascular Risk Stratification
+
+**Project:** CardioSense AI — Phase 2 & 3  
+**Author:** prince-gupta79  
+
+---
+
+## 1. Clinical Data Architecture & Feature Engineering
+The underlying dataset utilizes clinical patient profiles mapping 13 core physiological parameters to a binary target variable representing the presence or absence of angiographic disease status.
+
+To maximize the predictive capabilities of distance-based and geometric classifiers (SVM and KNN), the continuous and categorical parameters were standardized using a localized Z-score scaling transformation:
+
+$$z = \frac{x - \mu}{\sigma}$$
+
+*(Paste the rest of your research content here...)*
+
+</details>
