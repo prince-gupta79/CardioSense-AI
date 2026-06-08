@@ -62,8 +62,6 @@ Least Predictive -> [fbs] Fasting Blood Sugar
 * **The Deceptive Biomarkers:** Traditional metrics like standing cholesterol (`chol`) or fasting blood sugar (`fbs`) scored significantly lower in isolation. This demonstrates the power of machine learning over classic checklists: a patient with a deceptively normal cholesterol count can still be accurately flagged as High-Risk due to underlying structural indicators caught by the tree splits.
 
 ---
-## 🔬 Technical Deep-Dive & Research
-For a granular look at the data paradigms, model benchmarking parameters, and how we audited the 100% precision anomaly, check out our full [Research Methodology Documentation](research.md).
 
 ## 5. Conclusions & Deployment
 
