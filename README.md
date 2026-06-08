@@ -1,6 +1,8 @@
 
 
-CardioSense AI ❤️
+CardioSense AI 
+# 🫀 CardioSense AI (Phase 2 & 3)
+> **Academic Note:** This project includes a verified **98.17% Cross-Validation** algorithmic audit. [Jump straight to the Research Papers ↓](#-technical-deep-dive--research-papers)
 A clinical heart disease prediction system built with machine learning. Enter patient vitals and get an instant risk assessment — powered by a Random Forest model trained on 1,025 patient records.
 Built independently during Class 12 as part of a self-directed journey into healthcare AI.
 
@@ -8,8 +10,6 @@ Live Demo
 Show Image
 Enter patient details → click Analyse Patient → get an instant clinical risk assessment.
 
-## 🔬 Technical Deep-Dive & Research
-For a granular look at the data paradigms, model benchmarking parameters, and how we audited the 100% precision anomaly, check out our full [Research Methodology Documentation](research.md).
 
 
 Results
