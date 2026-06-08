@@ -1,4 +1,5 @@
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://github.com/prince-gupta79/CardioSense-AI/blob/main/02_train_models.py) [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=Streamlit&logoColor=white)](https://cardiosense-ai-xtswceqgzbj3ao4jua6hmi.streamlit.app) [![Scikit-Learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=flat&logo=scikit-learn&logoColor=white)](#-technical-deep-dive--research-papers)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://github.com/prince-gupta79/CardioSense-AI/blob/main/02_train_models.py) [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=Streamlit&logoColor=white)](https://cardiosense-ai-xtswceqgzbj3ao4jua6hmi.streamlit.app) [![Scikit-Learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=flat&logo=scikit-learn&logoColor=white)](https://github.com/prince-gupta79/CardioSense-AI/blob/main/02_train_models.py)
+
 
 CardioSense AI 
 # 🫀 CardioSense AI (Phase 2 & 3)
