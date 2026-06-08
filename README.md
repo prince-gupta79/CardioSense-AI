@@ -1,5 +1,3 @@
-## 🔬 Technical Deep-Dive & Research
-For a granular look at the data paradigms, model benchmarking parameters, and how we audited the 100% precision anomaly, check out our full [Research Methodology Documentation](research.md).
 
 
 CardioSense AI ❤️
@@ -9,6 +7,10 @@ Built independently during Class 12 as part of a self-directed journey into heal
 Live Demo
 Show Image
 Enter patient details → click Analyse Patient → get an instant clinical risk assessment.
+
+## 🔬 Technical Deep-Dive & Research
+For a granular look at the data paradigms, model benchmarking parameters, and how we audited the 100% precision anomaly, check out our full [Research Methodology Documentation](research.md).
+
 
 Results
 | Model | Accuracy | Precision | Recall | AUC-ROC |
