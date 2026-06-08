@@ -1,4 +1,6 @@
-
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=Streamlit&logoColor=white)
+![Scikit-Learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=flat&logo=scikit-learn&logoColor=white)
 
 CardioSense AI 
 # 🫀 CardioSense AI (Phase 2 & 3)
