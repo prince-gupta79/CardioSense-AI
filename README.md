@@ -1,3 +1,7 @@
+## 🔬 Technical Deep-Dive & Research
+For a granular look at the data paradigms, model benchmarking parameters, and how we audited the 100% precision anomaly, check out our full [Research Methodology Documentation](research.md).
+
+
 CardioSense AI ❤️
 A clinical heart disease prediction system built with machine learning. Enter patient vitals and get an instant risk assessment — powered by a Random Forest model trained on 1,025 patient records.
 Built independently during Class 12 as part of a self-directed journey into healthcare AI.
